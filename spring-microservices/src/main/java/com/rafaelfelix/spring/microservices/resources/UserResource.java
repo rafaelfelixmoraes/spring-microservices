@@ -13,7 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.rafaelfelix.spring.microservices.dto.PostsDTO;
 import com.rafaelfelix.spring.microservices.dto.UserDTO;
+import com.rafaelfelix.spring.microservices.resources.exceptions.UserNotFoundException;
+import com.rafaelfelix.spring.microservices.services.PostsDaoService;
 import com.rafaelfelix.spring.microservices.services.UserDaoService;
 
 @RestController
@@ -22,10 +25,16 @@ public class UserResource {
 	
 	@Autowired
 	private UserDaoService userService;
+	
+	@Autowired
+	private PostsDaoService postsService;
 
 	@GetMapping()
 	public ResponseEntity<List<UserDTO>> findAll(){
 		List<UserDTO> users = userService.listAll();
+		if(users == null || users.isEmpty()) {
+			throw new UserNotFoundException("No users found");
+		}
 		return ResponseEntity.ok(users);
 	}
 	
@@ -39,6 +48,40 @@ public class UserResource {
 	@GetMapping("/{id}")
 	public ResponseEntity<UserDTO> findOne(@PathVariable Integer id){
 		UserDTO user = userService.findOne(id);
+		if(user == null) {
+			throw new UserNotFoundException("ID not found - ".concat(id.toString()));
+		}
 		return ResponseEntity.ok(user);
+	}
+	
+	@GetMapping("/{id}/posts")
+	public ResponseEntity<List<PostsDTO>> findAllPostsByUser(@PathVariable Integer id){
+		UserDTO user = userService.findOne(id);
+		List<PostsDTO> userPosts = postsService.listAllPostsByUser(user);
+		
+		if(userPosts == null || userPosts.isEmpty()) {
+			throw new UserNotFoundException("No posts found");
+		}
+		return ResponseEntity.ok(userPosts);
+	}
+	
+	@PostMapping("/{id}/posts")
+	public ResponseEntity<?> createPosts(@PathVariable Integer id, @RequestBody PostsDTO userPost){
+		UserDTO user = userService.findOne(id);
+		userPost.setUser(user);
+		PostsDTO newPost = postsService.save(userPost);
+		URI uri =  ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").build(newPost.getId());
+		return ResponseEntity.created(uri).build();
+	}
+	
+	@GetMapping("/{id}/posts/{post_id}")
+	public ResponseEntity<PostsDTO> findAllPostsByUser(@PathVariable Integer id, @PathVariable Integer post_id){
+		UserDTO user = userService.findOne(id);
+		PostsDTO userPost = postsService.getPostDetails(user, post_id);
+		
+		if(userPost == null) {
+			throw new UserNotFoundException("No post found for this user");
+		}
+		return ResponseEntity.ok(userPost);
 	}
 }

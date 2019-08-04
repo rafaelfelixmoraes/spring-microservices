@@ -49,7 +49,7 @@ public class UserDTO implements Serializable{
 	}
 
 	@JsonFormat
-    (shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+    (shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy", timezone = "America/Sao_Paulo")
 	public Date getDateBirth() {
 		return dateBirth;
 	}

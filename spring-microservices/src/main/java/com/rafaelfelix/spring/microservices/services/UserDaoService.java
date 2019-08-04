@@ -11,7 +11,7 @@ import com.rafaelfelix.spring.microservices.dto.UserDTO;
 @Component
 public class UserDaoService {
 
-	private static List<UserDTO> users = new ArrayList<>();
+	protected static List<UserDTO> users = new ArrayList<>();
 	
 	static {
 		users.add(new UserDTO(1, "Rafael", new Date()));
