@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
+import javax.validation.constraints.Past;
+import javax.validation.constraints.Size;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.Getter;
@@ -17,8 +20,10 @@ public class UserDTO implements Serializable{
 
 	private Integer id;
 	
+	@Size(min = 2, max = 100, message = "Name must be at least 2 and maximun of 100 characters")
 	private String name;
 	
+	@Past(message = "Date Birth must be in the past")
 	private Date dateBirth;
 	
 	public UserDTO() {

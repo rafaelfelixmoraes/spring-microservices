@@ -2,6 +2,7 @@ package com.rafaelfelix.spring.microservices.services;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
@@ -35,6 +36,19 @@ public class UserDaoService {
 	public UserDTO findOne(int id) {
 		for(UserDTO user : users) {
 			if(id == user.getId()) {
+				return user;
+			}
+		}
+		
+		return null;
+	}
+	
+	public UserDTO deleteById(int id) {
+		Iterator<UserDTO> userIterator = users.iterator();
+		while(userIterator.hasNext()) {
+			UserDTO user = userIterator.next();
+			if(id == user.getId()) {
+				userIterator.remove();
 				return user;
 			}
 		}
