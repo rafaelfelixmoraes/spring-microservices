@@ -9,11 +9,14 @@ import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@ApiModel(description = "All details about the User")
 public class UserDTO implements Serializable{
 
 	private static final long serialVersionUID = 1L;
@@ -21,9 +24,11 @@ public class UserDTO implements Serializable{
 	private Integer id;
 	
 	@Size(min = 2, max = 100, message = "Name must be at least 2 and maximun of 100 characters")
+	@ApiModelProperty(notes = "Name must be at least 2 and maximun of 100 characters")
 	private String name;
 	
 	@Past(message = "Date Birth must be in the past")
+	@ApiModelProperty(notes = "Date Birth must be in the past")
 	private Date dateBirth;
 	
 	public UserDTO() {
