@@ -23,10 +23,13 @@ public class SwaggerConfig {
 			"Rafael Felix de Moraes", 
 			"https://github.com/rafaelfelixmoraes",
 			"dickinson.rafael@gmail.com");
+	
+	@SuppressWarnings("rawtypes")
 	private static final ApiInfo DEFAULT_API_INFO = new ApiInfo(
 			"Microservices APIs", "Microservices Api Documentation", "1.0", "urn:tos",
             DEFAULT_CONTACT, "Apache 2.0", "http://www.apache.org/licenses/LICENSE-2.0", 
             new ArrayList<VendorExtension>());
+	
 	private static final Set<String> DEFAULT_CONSUMES_AND_PRODUCES = new HashSet<String>(
 			Arrays.asList("application/json", "application/xml"));
 
