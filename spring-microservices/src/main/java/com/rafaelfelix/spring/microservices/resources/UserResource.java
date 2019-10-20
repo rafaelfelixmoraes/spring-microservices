@@ -2,6 +2,7 @@ package com.rafaelfelix.spring.microservices.resources;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 import javax.validation.Valid;
 
@@ -54,12 +55,12 @@ public class UserResource {
 	
 	@GetMapping("/{id}")
 	public Resource<UserDTO> findOne(@PathVariable Integer id){
-		UserDTO user = userService.findOne(id);
-		if(user == null) {
+		Optional<UserDTO> user = userService.findOne(id);
+		if(!user.isPresent()) {
 			throw new UserNotFoundException("ID not found - ".concat(id.toString()));
 		}
 		
-		Resource<UserDTO> resource = new Resource<UserDTO>(user);
+		Resource<UserDTO> resource = new Resource<UserDTO>(user.get());
 		ControllerLinkBuilder linkTo = linkTo(methodOn(this.getClass()).findAll());
 		resource.add(linkTo.withRel("all-users"));
 		
@@ -68,8 +69,13 @@ public class UserResource {
 	
 	@GetMapping("/{id}/posts")
 	public ResponseEntity<List<PostsDTO>> findAllPostsByUser(@PathVariable Integer id){
-		UserDTO user = userService.findOne(id);
-		List<PostsDTO> userPosts = postsService.listAllPostsByUser(user);
+		Optional<UserDTO> user = userService.findOne(id);
+		
+		if(!user.isPresent()) {
+			throw new UserNotFoundException("No user found");
+		}
+		
+		List<PostsDTO> userPosts = postsService.listAllPostsByUser(user.get());
 		
 		if(userPosts == null || userPosts.isEmpty()) {
 			throw new UserNotFoundException("No posts found");
@@ -77,10 +83,10 @@ public class UserResource {
 		return ResponseEntity.ok(userPosts);
 	}
 	
-	@PostMapping("/{id}/posts")
+	/*@PostMapping("/{id}/posts")
 	public ResponseEntity<?> createPosts(@PathVariable Integer id, @RequestBody PostsDTO userPost){
-		UserDTO user = userService.findOne(id);
-		userPost.setUser(user);
+		Optional<UserDTO> user = userService.findOne(id);
+		userPost.setUser(user.get());
 		PostsDTO newPost = postsService.save(userPost);
 		URI uri =  ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").build(newPost.getId());
 		return ResponseEntity.created(uri).build();
@@ -88,21 +94,23 @@ public class UserResource {
 	
 	@GetMapping("/{id}/posts/{post_id}")
 	public ResponseEntity<PostsDTO> findAllPostsByUser(@PathVariable Integer id, @PathVariable Integer post_id){
-		UserDTO user = userService.findOne(id);
-		PostsDTO userPost = postsService.getPostDetails(user, post_id);
+		Optional<UserDTO> user = userService.findOne(id);
+		PostsDTO userPost = postsService.getPostDetails(user.get(), post_id);
 		
 		if(userPost == null) {
 			throw new UserNotFoundException("No post found for this user");
 		}
 		return ResponseEntity.ok(userPost);
-	}
+	}*/
+	
 	
 	@DeleteMapping("/{id}")
 	public void deleteUserById(@PathVariable Integer id){
-		UserDTO user = userService.deleteById(id);
-		
-		if(user == null) {
+		Optional<UserDTO> user = userService.findOne(id);
+		if(!user.isPresent()) {
 			throw new UserNotFoundException("No post found for this user");
+		} else {
+			userService.deleteByEntity(user.get());
 		}
 	}
 }

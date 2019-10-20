@@ -4,55 +4,39 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.rafaelfelix.spring.microservices.dto.UserDTO;
+import com.rafaelfelix.spring.microservices.repositories.UserDTORepository;
 
 @Component
 public class UserDaoService {
 
-	protected static List<UserDTO> users = new ArrayList<>();
-	
-	static {
-		users.add(new UserDTO(1, "Rafael", new Date()));
-		users.add(new UserDTO(2, "José", new Date()));
-		users.add(new UserDTO(3, "Abelardo", new Date()));
-	}
+	@Autowired
+	private UserDTORepository userRepo;
 	
 	public List<UserDTO> listAll() {
-		return users;
+		return userRepo.findAll();
 	}
+	
 	
 	public UserDTO save(UserDTO user) {
 		if(user.getId() == null) {
+			List<UserDTO> users = listAll();
 			user.setId(users.size() + 1);
 		}
-		users.add(user);
 		
-		return user;	
+		return userRepo.saveAndFlush(user);	
 	}
 	
-	public UserDTO findOne(int id) {
-		for(UserDTO user : users) {
-			if(id == user.getId()) {
-				return user;
-			}
-		}
-		
-		return null;
+	public Optional<UserDTO> findOne(int id) {
+		return userRepo.findById(id);
 	}
 	
-	public UserDTO deleteById(int id) {
-		Iterator<UserDTO> userIterator = users.iterator();
-		while(userIterator.hasNext()) {
-			UserDTO user = userIterator.next();
-			if(id == user.getId()) {
-				userIterator.remove();
-				return user;
-			}
-		}
-		
-		return null;
+	public void deleteByEntity(UserDTO user) {
+		userRepo.delete(user);
 	}
 }

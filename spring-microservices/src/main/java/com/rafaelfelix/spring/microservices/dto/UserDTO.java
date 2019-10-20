@@ -2,8 +2,13 @@ package com.rafaelfelix.spring.microservices.dto;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.Objects;
+import java.util.List;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Size;
 
@@ -11,16 +16,21 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 @ApiModel(description = "All details about the User")
+@Entity
+@EqualsAndHashCode
 public class UserDTO implements Serializable{
 
 	private static final long serialVersionUID = 1L;
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	
 	@Size(min = 2, max = 100, message = "Name must be at least 2 and maximun of 100 characters")
@@ -31,6 +41,9 @@ public class UserDTO implements Serializable{
 	@ApiModelProperty(notes = "Date Birth must be in the past")
 	private Date dateBirth;
 	
+	@OneToMany(mappedBy = "user")
+	private List<PostsDTO> posts;
+	
 	public UserDTO() {
 		
 	}
@@ -39,23 +52,6 @@ public class UserDTO implements Serializable{
 		this.id = id;
 		this.name = name;
 		this.dateBirth = dateBirth;
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(id);
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (!(obj instanceof UserDTO)) {
-			return false;
-		}
-		UserDTO other = (UserDTO) obj;
-		return Objects.equals(id, other.id);
 	}
 
 	@JsonFormat
