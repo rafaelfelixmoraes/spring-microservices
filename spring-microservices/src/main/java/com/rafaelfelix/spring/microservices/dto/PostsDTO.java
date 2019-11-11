@@ -3,7 +3,6 @@ package com.rafaelfelix.spring.microservices.dto;
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.crypto.spec.PSource;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;

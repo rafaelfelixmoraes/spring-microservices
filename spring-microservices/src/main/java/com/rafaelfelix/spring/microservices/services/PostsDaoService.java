@@ -1,7 +1,5 @@
 package com.rafaelfelix.spring.microservices.services;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,10 +7,13 @@ import org.springframework.stereotype.Component;
 
 import com.rafaelfelix.spring.microservices.dto.PostsDTO;
 import com.rafaelfelix.spring.microservices.dto.UserDTO;
-import com.rafaelfelix.spring.microservices.repositories.UserDTORepository;
+import com.rafaelfelix.spring.microservices.repositories.PostDTORepository;
 
 @Component
 public class PostsDaoService {
+	
+	@Autowired
+	private PostDTORepository postRepo;
 	
 	public List<PostsDTO> listAllPostsByUser(UserDTO user) {
 		List<PostsDTO> userPosts = user.getPosts();
@@ -20,17 +21,16 @@ public class PostsDaoService {
 		return userPosts;
 	}
 	
-	/*public PostsDTO save(PostsDTO post) {
-		populateUsers();
+	public PostsDTO save(PostsDTO post) {
 		if(post.getId() == null) {
+			List<PostsDTO> posts = listAllPostsByUser(post.getUser());
 			post.setId(posts.size() + 1);
 		}
-		posts.add(post);
 		
-		return post;	
+		return postRepo.saveAndFlush(post);	
 	}
 	
-	public PostsDTO findOne(int id) {
+	/*public PostsDTO findOne(int id) {
 		populateUsers();
 		for(PostsDTO post : posts) {
 			if(id == post.getId()) {

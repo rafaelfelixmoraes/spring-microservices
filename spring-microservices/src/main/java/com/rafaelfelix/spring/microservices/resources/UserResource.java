@@ -83,16 +83,21 @@ public class UserResource {
 		return ResponseEntity.ok(userPosts);
 	}
 	
-	/*@PostMapping("/{id}/posts")
+	@PostMapping("/{id}/posts")
 	public ResponseEntity<?> createPosts(@PathVariable Integer id, @RequestBody PostsDTO userPost){
 		Optional<UserDTO> user = userService.findOne(id);
+		
+		if(!user.isPresent()) {
+			throw new UserNotFoundException("No user found");
+		}
+		
 		userPost.setUser(user.get());
 		PostsDTO newPost = postsService.save(userPost);
 		URI uri =  ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").build(newPost.getId());
 		return ResponseEntity.created(uri).build();
 	}
 	
-	@GetMapping("/{id}/posts/{post_id}")
+	/*@GetMapping("/{id}/posts/{post_id}")
 	public ResponseEntity<PostsDTO> findAllPostsByUser(@PathVariable Integer id, @PathVariable Integer post_id){
 		Optional<UserDTO> user = userService.findOne(id);
 		PostsDTO userPost = postsService.getPostDetails(user.get(), post_id);
